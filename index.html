@@ -2874,7 +2874,10 @@
                 // Extract the value from cell B2
                 const cellValue = jsonData.table.rows[0].c[0].v;
                 updateKanjiProgress(cellValue);
+                const linkElement = createLink(cellValue, "go to study");
+                document.getElementById('title-container').appendChild(linkElement);
                 addTextToSVG(svg, cellValue + " Kanji's readings studied", "100", "100", "40px", "black", "0.5");
+
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -2949,6 +2952,19 @@
             textElement.textContent = textContent;
             svgElement.appendChild(textElement);
         }
+
+
+        function createLink(searchText, text) {
+            const link = document.createElement('a');
+            const url = new URL('https://483d8b.github.io/GRS/index.html');
+            url.searchParams.set('search', searchText);
+            url.searchParams.set('useLessons', 'true');
+            link.href = url.toString();
+            link.textContent = text;
+            link.setAttribute('target', '_blank');
+            return link;
+        }
+
 
 
 
