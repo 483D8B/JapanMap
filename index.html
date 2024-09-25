@@ -14,7 +14,7 @@
 
 <body>
 
-
+    <div id="tooltip"></div>
 
     <div id="map-container">
 
@@ -2376,73 +2376,33 @@
         };
 
 
-        // Define the stages and their corresponding kanji counts
-        const stages = [
-            { level: "初級", kanjiCount: 0 },
-            { level: "1 段", kanjiCount: 50 },
-            { level: "2 段", kanjiCount: 100 },
-            { level: "3 段", kanjiCount: 200 },
-            { level: "4 段", kanjiCount: 300 },
-            { level: "5 段", kanjiCount: 400 },
-            { level: "6 段", kanjiCount: 500 },
-            { level: "7 段", kanjiCount: 600 },
-            { level: "8 段", kanjiCount: 700 },
-            { level: "9 段", kanjiCount: 800 },
-            { level: "10 段", kanjiCount: 900 },
-            { level: "11 段", kanjiCount: 1000 },
-            { level: "12 段", kanjiCount: 1100 },
-            { level: "13 段", kanjiCount: 1200 },
-            { level: "14 段", kanjiCount: 1300 },
-            { level: "15 段", kanjiCount: 1400 },
-            { level: "16 段", kanjiCount: 1500 },
-            { level: "17 段", kanjiCount: 1600 },
-            { level: "18 段", kanjiCount: 1700 },
-            { level: "19 段", kanjiCount: 1800 },
-            { level: "20 段", kanjiCount: 1900 },
-            { level: "21 段", kanjiCount: 2000 },
-            { level: "22 段", kanjiCount: 2100 },
-            { level: "23 段", kanjiCount: 2200 },
-            { level: "24 段", kanjiCount: 2300 },
-        ];
 
         function displayBadges(kanjiLearned) {
             const badgesList = document.getElementById('badges-list');
             badgesList.innerHTML = ""; // Clear previous badges
 
             // Iterate through stages to check which badges are acquired
-            for (let i = 0; i < stages.length; i++) {
-                const stage = stages[i];
-
-                // Skip 初級 level as it has no badge image
-                if (i === 0) continue; // Assuming 初級 is the first stage in the stages array
-
+            stages.forEach((stage, index) => {
+                if (index === 0) return; // Skip 初級 level as it has no badge image
                 if (kanjiLearned >= stage.kanjiCount) {
-                    // Create a badge wrapper with a CSS class
                     const badgeWrapper = document.createElement('div');
-                    badgeWrapper.className = 'badge'; // Use the CSS class
+                    badgeWrapper.className = 'badge';
 
-                    // Create a badge div with the corresponding class based on the stage
                     const badgeDiv = document.createElement('div');
-                    badgeDiv.className = `bg-${i}`; // Set the class based on the index
+                    badgeDiv.className = `bg-${index}`;
 
-                    // Create a text element for the badge level
                     const badgeText = document.createElement('div');
                     badgeText.innerText = stage.level;
-                    badgeText.className = 'badge-text'; // Apply the CSS class for the text
+                    badgeText.className = 'badge-text';
 
-                    // Append the badge div and text to the wrapper
                     badgeWrapper.appendChild(badgeDiv);
                     badgeWrapper.appendChild(badgeText);
-
-                    // Append the badge wrapper to the badges list
                     badgesList.appendChild(badgeWrapper);
                 }
-            }
+            });
         }
 
 
-        const kanjiLearned = 2300;
-        displayBadges(kanjiLearned);
 
 
 
@@ -2453,7 +2413,7 @@
         // Get necessary DOM elements
         const svg = document.getElementById('japan-map');
         const mapContainer = document.getElementById('map-container');
-        const countryPaths = svg.querySelectorAll('path'); // Get all country paths
+        const prefecturePaths = svg.querySelectorAll('path'); // Get all country paths
 
         // Initial viewBox values
         const initialViewBox = { x: 0, y: -50, width: 500, height: 600 };
@@ -2571,10 +2531,230 @@
         // Call initializeZoom when the DOM is fully loaded
         window.addEventListener('DOMContentLoaded', () => {
             initializeZoom(); // Ensure zoom is initialized when the page is loaded
+            setupPrefectureInteractions();
         });
 
 
 
+        /*****************************
+         * KANJI ASSIGNING FUNCTIONS *
+         *****************************/
+
+        // Function to extract country  from the SVG
+        function extractPrefecturesData() {
+            const prefecturesData = [];
+            const prefecturePaths = document.querySelectorAll('#japan-map path');
+
+            prefecturePaths.forEach(path => {
+                const prefectureName = path.getAttribute('title');
+                const prefectureId = path.getAttribute('id');
+
+                if (prefectureName && prefectureId) {
+                    prefecturesData.push({ id: prefectureId, name: prefectureName });
+                }
+            });
+
+            return prefecturesData;
+        }
+
+
+        function distributeKanjiToPrefectures(prefecturesData, allKanji) {
+            const kanjiPerPrefecture = Math.floor(allKanji.length / prefecturesData.length);
+            const remainderKanji = allKanji.length % prefecturesData.length;
+
+            let kanjiIndex = 0;
+            const prefectureKanjiMapping = {};
+
+            // Distribute kanji to each prefecture in order (no shuffling)
+            prefecturesData.forEach((prefecture, index) => {
+                const kanjiForPrefecture = allKanji.slice(kanjiIndex, kanjiIndex + kanjiPerPrefecture);
+
+                // Distribute the remainder kanji to first few prefectures
+                if (index < remainderKanji) {
+                    kanjiForPrefecture.push(allKanji[kanjiIndex + kanjiPerPrefecture]);
+                    kanjiIndex++;
+                }
+
+                prefectureKanjiMapping[prefecture.id] = kanjiForPrefecture;
+                kanjiIndex += kanjiPerPrefecture;
+            });
+
+            return prefectureKanjiMapping;
+        }
+
+        function setupPrefectureInteractions() {
+            const prefecturesData = extractPrefecturesData();
+            const kanjiTooltip = document.getElementById('tooltip');
+            const badgeContainer = document.getElementById('badge-container');
+            let highlightedPrefecture = null;  // Track the currently highlighted prefecture
+
+            // Flatten the grsByVolume object to get all the kanji
+            const allKanji = [];
+            for (const volume of Object.values(grsByVolume)) {
+                for (const [key, value] of Object.entries(volume)) {
+                    allKanji.push(value);
+                }
+            }
+
+            // Distribute the kanji in order to all prefectures
+            const prefectureKanjiMapping = distributeKanjiToPrefectures(prefecturesData, allKanji);
+
+
+            /*****************
+             * KANJI TOOLTIP *
+             *****************/
+            // Position the tooltip
+            function positionTooltip() {
+                const badgeRect = badgeContainer.getBoundingClientRect();
+                kanjiTooltip.style.top = `${badgeRect.bottom + 10}px`;
+                kanjiTooltip.style.left = `${badgeRect.left}px`;
+            }
+
+            // Close the tooltip
+            function closeTooltip() {
+                kanjiTooltip.style.display = 'none';
+                highlightedPrefecture.classList.remove('highlight');
+            }
+
+
+
+            // Display kanji in tooltip
+            function displayKanjiInTooltip(prefecture) {
+                kanjiTooltip.innerHTML = '';
+
+                // Create close button
+                const closeButton = document.createElement('button');
+                closeButton.innerHTML = '&times;'; // HTML entity for "×"
+                closeButton.classList.add('close'); // Add the close button class
+
+                closeButton.onclick = closeTooltip;
+
+                const titleDiv = document.createElement('div');
+                titleDiv.textContent = prefecture.name;
+                titleDiv.classList.add('title'); // Add the title class
+
+                const kanjiListDiv = document.createElement('div');
+                const kanjiForPrefecture = prefectureKanjiMapping[prefecture.id] || [];
+
+                kanjiForPrefecture.forEach(kanji => {
+                    const kanjiSpan = document.createElement('span');
+                    kanjiSpan.textContent = kanji;
+                    kanjiSpan.style.marginRight = '5px';
+                    kanjiListDiv.appendChild(kanjiSpan);
+                });
+
+                kanjiTooltip.appendChild(closeButton);
+                kanjiTooltip.appendChild(titleDiv);
+                kanjiTooltip.appendChild(kanjiListDiv);
+                kanjiTooltip.style.display = 'block';
+                positionTooltip();
+            }
+
+
+            // Add click events for each prefecture
+            prefecturesData.forEach(prefecture => {
+                const prefecturePath = document.getElementById(prefecture.id);
+
+                prefecturePath.addEventListener('click', () => {
+                    // Remove highlight from the previously selected prefecture
+                    if (highlightedPrefecture) {
+                        highlightedPrefecture.classList.remove('highlight');
+                    }
+
+                    // Highlight the current prefecture
+                    prefecturePath.classList.add('highlight');
+                    highlightedPrefecture = prefecturePath; // Update the currently highlighted prefecture
+
+                    // Display the kanji in the tooltip
+                    displayKanjiInTooltip(prefecture);
+                });
+            });
+
+
+            // Reposition tooltip on window resize
+            window.addEventListener('resize', () => {
+                if (kanjiTooltip.style.display === 'block') {
+                    positionTooltip();
+                }
+            });
+        }
+
+        /****************************************
+         * KANJI COLOURING PREFECTURE FUNCTIONS *
+         ****************************************/
+        const stages = [
+            { level: "初級", kanjiCount: 0 },
+            { level: "1 段", kanjiCount: 50 },
+            { level: "2 段", kanjiCount: 100 },
+            { level: "3 段", kanjiCount: 200 },
+            { level: "4 段", kanjiCount: 300 },
+            { level: "5 段", kanjiCount: 400 },
+            { level: "6 段", kanjiCount: 500 },
+            { level: "7 段", kanjiCount: 600 },
+            { level: "8 段", kanjiCount: 700 },
+            { level: "9 段", kanjiCount: 800 },
+            { level: "10 段", kanjiCount: 900 },
+            { level: "11 段", kanjiCount: 1000 },
+            { level: "12 段", kanjiCount: 1100 },
+            { level: "13 段", kanjiCount: 1200 },
+            { level: "14 段", kanjiCount: 1300 },
+            { level: "15 段", kanjiCount: 1400 },
+            { level: "16 段", kanjiCount: 1500 },
+            { level: "17 段", kanjiCount: 1600 },
+            { level: "18 段", kanjiCount: 1700 },
+            { level: "19 段", kanjiCount: 1800 },
+            { level: "20 段", kanjiCount: 1900 },
+            { level: "21 段", kanjiCount: 2000 },
+            { level: "22 段", kanjiCount: 2100 },
+            { level: "23 段", kanjiCount: 2200 },
+            { level: "24 段", kanjiCount: 2300 },
+        ];
+
+        // Define the color scale
+        const colorScale = [
+            '#fafafa', '#cc1e51', '#ee3d43', '#f2682a', '#fa9d1c', '#fed44c', '#fef200',
+            '#d6df20', '#8dc73f', '#3ab54d', '#0b9444', '#056839', '#2bb673',
+            '#12a8a9', '#24a9e1', '#0e74bc', '#34489f', '#272264', '#422263',
+            '#62226e', '#92278f', '#931e62', '#630342', '#000000', 'rainbow'
+        ];
+        function generatePastelRainbowColor(index, totalSteps) {
+            const hue = (index / totalSteps) * 360; // Full circle (0-360 degrees)
+            const saturation = 100;  // Lower saturation for pastel colors (60% gives a softer color)
+            const lightness = 75;   // Higher lightness for pastel colors (85% makes it light)
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`; // Generates a pastel HSL color
+        }
+
+
+
+        function colorPrefecturesByKanji(kanjiLearned) {
+            // Determine the current stage and its corresponding color
+            let currentStageIndex = stages.findIndex(stage => kanjiLearned < stage.kanjiCount) - 1;
+            if (currentStageIndex === -2) currentStageIndex = stages.length - 1; // If all stages completed
+
+            const currentColor = colorScale[currentStageIndex];
+
+            // Get all prefecture paths
+            const prefecturePaths = document.querySelectorAll('#japan-map path');
+            const totalPrefectures = prefecturePaths.length;
+
+            // Color all prefectures with the current color or generate rainbow colors
+            prefecturePaths.forEach((path, index) => {
+                if (currentColor === 'rainbow') {
+                    const rainbowColor = generatePastelRainbowColor(index, totalPrefectures);
+                    path.style.fill = rainbowColor;
+                } else {
+                    path.style.fill = currentColor;
+                }
+            });
+        }
+
+        // Example usage
+        function updateKanjiProgress(kanjiLearned) {
+            colorPrefecturesByKanji(kanjiLearned);
+            displayBadges(kanjiLearned);
+        }
+
+        updateKanjiProgress(1);
 
 
         /***********************************
@@ -2612,40 +2792,6 @@
             console.log('Prefectures (Alphabetical Order):', prefectureNames);
         }
 
-        // Create a tooltip or a div to display the country title
-        const tooltip = document.createElement('div');
-        tooltip.style.position = 'absolute';
-        tooltip.style.padding = '8px';
-        tooltip.style.background = 'rgba(0, 0, 0, 0.7)';
-        tooltip.style.color = 'white';
-        tooltip.style.borderRadius = '4px';
-        tooltip.style.visibility = 'hidden'; // Hidden by default
-        tooltip.style.pointerEvents = 'none'; // Allow clicks to pass through
-        document.body.appendChild(tooltip);
-
-        // Add a click event listener to each path
-        countryPaths.forEach(country => {
-            country.addEventListener('click', (e) => {
-                // Get the country title from the data attribute
-                const title = country.getAttribute('title');
-
-                // Show the tooltip with the country title
-                tooltip.innerText = title;
-
-                // Position the tooltip near the mouse click position
-                tooltip.style.left = `${e.pageX + 10}px`; // Offset by 10px
-                tooltip.style.top = `${e.pageY + 10}px`;
-                tooltip.style.visibility = 'visible'; // Make the tooltip visible
-                country.style.fill = 'red';
-            });
-        });
-
-        // Hide the tooltip when clicking anywhere else
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('path')) { // If the clicked target is not a country path
-                tooltip.style.visibility = 'hidden';
-            }
-        });
 
 
     </script>
