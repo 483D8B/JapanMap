@@ -2874,6 +2874,7 @@
                 // Extract the value from cell B2
                 const cellValue = jsonData.table.rows[0].c[0].v;
                 updateKanjiProgress(cellValue);
+                addTextToSVG(svg, cellValue + " Kanji's readings studied", "100", "100", "40px", "black", "0.5");
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -2933,6 +2934,24 @@
 
             return kanjiIdMapping;
         }
+
+
+        // Function to add text dynamically to an SVG
+        function addTextToSVG(svgElement, textContent, x, y, fontSize, fillColor, opacity = 1) {
+            const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            textElement.setAttribute("x", x);
+            textElement.setAttribute("y", y);
+            textElement.setAttribute("text-anchor", "middle");
+            textElement.setAttribute("dominant-baseline", "middle");
+            textElement.setAttribute("font-size", fontSize);
+            textElement.setAttribute("fill", fillColor);
+            textElement.setAttribute("opacity", opacity);
+            textElement.textContent = textContent;
+            svgElement.appendChild(textElement);
+        }
+
+
+
 
 
 
