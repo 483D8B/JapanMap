@@ -92,15 +92,6 @@ path {
     font-weight: 600;
 }
 
-#tooltip {
-    position: absolute;
-    font-family: 'Noto Sans JP', sans-serif;
-    display: none;
-    background-color: white;
-    border: 2px solid black;
-    padding: 5px;
-    z-index: 1000;
-}
 
 .highlight {
     fill: aqua !important;
