@@ -2592,7 +2592,7 @@
         function setupPrefectureInteractions() {
             const prefecturesData = extractPrefecturesData();
             const kanjiTooltip = document.getElementById('tooltip');
-            const titleContainer = document.getElementById('title-container');
+            const badgeContainer = document.getElementById('badge-container');
             let highlightedPrefecture = null;  // Track the currently highlighted prefecture
 
             // Flatten the grsByVolume object to get all the kanji
@@ -2612,10 +2612,12 @@
              *****************/
             // Position the tooltip
             function positionTooltip() {
-                const titleRect = titleContainer.getBoundingClientRect();
-                kanjiTooltip.style.top = `${titleRect.bottom + 10}px`;
-                kanjiTooltip.style.left = `${titleRect.left}px`;
+                const badgeRect = badgeContainer.getBoundingClientRect();
+                const tooltipHeight = kanjiTooltip.offsetHeight;
+                kanjiTooltip.style.top = `${badgeRect.top - tooltipHeight}px`;
+                kanjiTooltip.style.left = `${badgeRect.left}px`;
             }
+
 
             // Close the tooltip
             function closeTooltip() {
