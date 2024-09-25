@@ -2546,7 +2546,7 @@
         /*****************************
          * KANJI ASSIGNING FUNCTIONS *
          *****************************/
-
+        let prefectureKanjiMapping; // Declare this at the top level so it's accessible globally
         // Function to extract country  from the SVG
         function extractPrefecturesData() {
             const prefecturesData = [];
@@ -2604,7 +2604,7 @@
             }
 
             // Distribute the kanji in order to all prefectures
-            const prefectureKanjiMapping = distributeKanjiToPrefectures(prefecturesData, allKanji);
+            prefectureKanjiMapping = distributeKanjiToPrefectures(prefecturesData, allKanji);
 
 
             /*****************
@@ -2732,28 +2732,67 @@
         }
 
 
-
         function colorPrefecturesByKanji(kanjiLearned) {
+            const allKanji = [];
+            for (const volume of Object.values(grsByVolume)) {
+                for (const [key, value] of Object.entries(volume)) {
+                    allKanji.push(value);
+                }
+            }
+
+            console.log("Kanji Learned:", kanjiLearned);
+
             // Determine the current stage and its corresponding color
             let currentStageIndex = stages.findIndex(stage => kanjiLearned < stage.kanjiCount) - 1;
             if (currentStageIndex === -2) currentStageIndex = stages.length - 1; // If all stages completed
 
             const currentColor = colorScale[currentStageIndex];
+            console.log("Current Stage Index:", currentStageIndex);
+            console.log("Current Color:", currentColor);
 
             // Get all prefecture paths
             const prefecturePaths = document.querySelectorAll('#japan-map path');
             const totalPrefectures = prefecturePaths.length;
+            console.log("Total Prefectures:", totalPrefectures);
 
             // Color all prefectures with the current color or generate rainbow colors
             prefecturePaths.forEach((path, index) => {
                 if (currentColor === 'rainbow') {
                     const rainbowColor = generatePastelRainbowColor(index, totalPrefectures);
                     path.style.fill = rainbowColor;
+                    console.log(`Prefecture ${index} colored with rainbow color:`, rainbowColor);
                 } else {
                     path.style.fill = currentColor;
+                    console.log(`Prefecture ${index} colored with current color:`, currentColor);
                 }
             });
+
+            const conqueredColor = 'deeppink'; // Light green color for conquered prefectures
+
+            for (const [prefectureId, kanjiList] of Object.entries(prefectureKanjiMapping)) {
+                const prefecturePath = document.getElementById(prefectureId);
+                if (!prefecturePath) {
+                    console.log(`Prefecture ${prefectureId} not found`);
+                    continue;
+                }
+
+                console.log(`Prefecture ${prefectureId} - Kanji List:`, kanjiList);
+
+
+                // Map kanji characters to their positions in the allkanji array
+                const kanjiIds = kanjiList.map(kanji => allKanji.indexOf(kanji));
+                const maxKanjiIdInPrefecture = Math.max(...kanjiIds);
+                console.log(`Prefecture ${prefectureId} - Max Kanji ID:`, maxKanjiIdInPrefecture);
+
+                if (kanjiLearned >= maxKanjiIdInPrefecture) {
+                    prefecturePath.style.fill = conqueredColor;
+                    console.log(`Prefecture ${prefectureId} colored with conquered color:`, conqueredColor);
+                }
+            }
         }
+
+
+
 
         // Example usage
         function updateKanjiProgress(kanjiLearned) {
@@ -2817,6 +2856,23 @@
 
             // Log the sorted list of prefecture names to the console
             console.log('Prefectures (Alphabetical Order):', prefectureNames);
+        }
+
+        function kanjiIdMapping(grsByVolume) {
+            const kanjiIdMapping = {};
+
+            // Loop through each volume in grsByVolume
+            for (const volume in grsByVolume) {
+                const kanjiList = grsByVolume[volume];
+
+                // Loop through each kanji in the volume
+                for (const id in kanjiList) {
+                    const kanji = kanjiList[id];
+                    kanjiIdMapping[kanji] = parseInt(id); // Store kanji as key and its ID as value
+                }
+            }
+
+            return kanjiIdMapping;
         }
 
 
