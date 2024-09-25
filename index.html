@@ -4,15 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japan</title>
+    <title>Path to Kanji Fluency</title>
     <meta name="description" content="insert description">
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
 </head>
 
 <body>
+
+    <div id="title-container">
+        <h1>Path to Kanji Fluency</h1>
+        <h2>Using the KLC Graded Reading Sets</h2>
+    </div>
+
 
     <div id="tooltip"></div>
 
@@ -2585,7 +2592,7 @@
         function setupPrefectureInteractions() {
             const prefecturesData = extractPrefecturesData();
             const kanjiTooltip = document.getElementById('tooltip');
-            const badgeContainer = document.getElementById('badge-container');
+            const titleContainer = document.getElementById('title-container');
             let highlightedPrefecture = null;  // Track the currently highlighted prefecture
 
             // Flatten the grsByVolume object to get all the kanji
@@ -2605,9 +2612,9 @@
              *****************/
             // Position the tooltip
             function positionTooltip() {
-                const badgeRect = badgeContainer.getBoundingClientRect();
-                kanjiTooltip.style.top = `${badgeRect.bottom + 10}px`;
-                kanjiTooltip.style.left = `${badgeRect.left}px`;
+                const titleRect = titleContainer.getBoundingClientRect();
+                kanjiTooltip.style.top = `${titleRect.bottom + 10}px`;
+                kanjiTooltip.style.left = `${titleRect.left}px`;
             }
 
             // Close the tooltip
@@ -2754,7 +2761,7 @@
             displayBadges(kanjiLearned);
         }
 
-        updateKanjiProgress(1);
+        updateKanjiProgress(2300);
 
 
         /***********************************
