@@ -2732,6 +2732,24 @@
         }
 
 
+        function getRealCentroid(pts) {
+            var first = pts[0], last = pts[pts.length - 1];
+            if (first.x !== last.x || first.y !== last.y) pts.push(first);
+            var twiceArea = 0,
+                x = 0, y = 0,
+                nPts = pts.length,
+                p1, p2, f;
+            for (var i = 0, j = nPts - 1; i < nPts; j = i++) {
+                p1 = pts[i]; p2 = pts[j];
+                f = p1.x * p2.y - p2.x * p1.y;
+                twiceArea += f;
+                x += (p1.x + p2.x) * f;
+                y += (p1.y + p2.y) * f;
+            }
+            f = twiceArea * 3;
+            return { x: x / f, y: y / f };
+        }
+
         function colorPrefecturesByKanji(kanjiLearned) {
             const allKanji = [];
             for (const volume of Object.values(grsByVolume)) {
@@ -2767,7 +2785,16 @@
                 }
             });
 
-            const conqueredColor = 'deeppink'; // Light green color for conquered prefectures
+            const conqueredColor = currentColor; // Light green color for conquered prefectures
+
+            // Define offsets for specific paths
+            const offsets = {
+                "JP-13": { x: 0, y: -14 },
+                "JP-32": { x: -5, y: -15 },
+                "JP-47": { x: 25, y: -17 },
+                "JP-42": { x: 0, y: 15 },
+                "JP-31": { x: 0, y: -1 }
+            };
 
             for (const [prefectureId, kanjiList] of Object.entries(prefectureKanjiMapping)) {
                 const prefecturePath = document.getElementById(prefectureId);
@@ -2778,7 +2805,6 @@
 
                 console.log(`Prefecture ${prefectureId} - Kanji List:`, kanjiList);
 
-
                 // Map kanji characters to their positions in the allkanji array
                 const kanjiIds = kanjiList.map(kanji => allKanji.indexOf(kanji));
                 const maxKanjiIdInPrefecture = Math.max(...kanjiIds);
@@ -2787,9 +2813,40 @@
                 if (kanjiLearned >= maxKanjiIdInPrefecture) {
                     prefecturePath.style.fill = conqueredColor;
                     console.log(`Prefecture ${prefectureId} colored with conquered color:`, conqueredColor);
+
+                    // Get the points of the path
+                    const pathLength = prefecturePath.getTotalLength();
+                    const points = [];
+                    for (let i = 0; i < pathLength; i++) {
+                        const point = prefecturePath.getPointAtLength(i);
+                        points.push({ x: point.x, y: point.y });
+                    }
+
+                    // Calculate the real centroid of the polygon
+                    const centroid = getRealCentroid(points);
+
+                    // Get the offset for the current path, if any
+                    const offset = offsets[prefectureId] || { x: 0, y: 0 };
+
+                    // Add text inside the conquered prefecture
+                    const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    textElement.setAttribute("x", centroid.x + offset.x);
+                    textElement.setAttribute("y", centroid.y + offset.y);
+                    textElement.setAttribute("text-anchor", "middle");
+                    textElement.setAttribute("dominant-baseline", "middle");
+                    textElement.setAttribute("fill", "black"); // Text color
+                    textElement.textContent = "✔"; // Text to display
+
+                    prefecturePath.parentNode.appendChild(textElement);
                 }
             }
         }
+
+
+
+
+
+
 
 
 
