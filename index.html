@@ -2761,7 +2761,27 @@
             displayBadges(kanjiLearned);
         }
 
-        updateKanjiProgress(2300);
+        const SHEET_ID = '1bJKVxDJMW53MI4IvKfSHy81TF2eLqbwDSQMsNqAvUMc';
+        const TAB_NAME = 'Progress';
+        const CELL = 'B2';
+
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${TAB_NAME}&range=${CELL}`;
+
+        fetch(url)
+            .then(res => res.text())
+            .then(rep => {
+                // Remove the prefix and suffix from the response
+                const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+
+                // Extract the value from cell B2
+                const cellValue = jsonData.table.rows[0].c[0].v;
+                updateKanjiProgress(cellValue);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
+
 
 
         /***********************************
