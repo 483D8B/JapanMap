@@ -8,6 +8,10 @@
 
 /*https://www.svgbackgrounds.com/elements/custom-css-cursors/*/
 
+:root {
+    --badge-size: 45px;
+    --badge-size-smaller: 25px;
+}
 
 #title-container {
     position: absolute;
@@ -134,145 +138,303 @@ path {
 
 
 .bg-1 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -2px -2px;
 }
 
 .bg-2 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -51px -2px;
 }
 
 .bg-3 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -2px -51px;
 }
 
 .bg-4 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -51px -51px;
 }
 
 .bg-5 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -100px -2px;
 }
 
 .bg-6 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -100px -51px;
 }
 
 .bg-7 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -2px -100px;
 }
 
 .bg-8 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -51px -100px;
 }
 
 .bg-9 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -100px -100px;
 }
 
 .bg-10 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -149px -2px;
 }
 
 .bg-11 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -149px -51px;
 }
 
 .bg-12 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -149px -100px;
 }
 
 .bg-13 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -2px -149px;
 }
 
 .bg-14 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -51px -149px;
 }
 
 .bg-15 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -100px -149px;
 }
 
 .bg-16 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -149px -149px;
 }
 
 .bg-17 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -198px -2px;
 }
 
 .bg-18 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -198px -51px;
 }
 
 .bg-19 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -198px -100px;
 }
 
 .bg-20 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -198px -149px;
 }
 
 .bg-21 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -2px -198px;
 }
 
 .bg-22 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -51px -198px;
 }
 
 .bg-23 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -100px -198px;
 }
 
 .bg-24 {
-    width: 45px;
-    height: 45px;
+    width: var(--badge-size);
+    height: var(--badge-size);
     background: url('css_sprites.png') -149px -198px;
+}
+
+@media (max-width: 600px) {
+
+    h1 {
+        font-size: 1rem;
+        color: #222;
+    }
+
+    h2 {
+        font-size: 0.5rem;
+        color: #555;
+    }
+
+    .bg-1 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -1px -1px;
+    }
+
+    .bg-2 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -28px -1px;
+    }
+
+    .bg-3 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -1px -28px;
+    }
+
+    .bg-4 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -28px -28px;
+    }
+
+    .bg-5 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -55px -1px;
+    }
+
+    .bg-6 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -55px -28px;
+    }
+
+    .bg-7 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -1px -55px;
+    }
+
+    .bg-8 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -28px -55px;
+    }
+
+    .bg-9 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -55px -55px;
+    }
+
+    .bg-10 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -82px -1px;
+    }
+
+    .bg-11 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -82px -28px;
+    }
+
+    .bg-12 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -82px -55px;
+    }
+
+    .bg-13 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -1px -82px;
+    }
+
+    .bg-14 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -28px -82px;
+    }
+
+    .bg-15 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -55px -82px;
+    }
+
+    .bg-16 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -82px -82px;
+    }
+
+    .bg-17 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -109px -1px;
+    }
+
+    .bg-18 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -109px -28px;
+    }
+
+    .bg-19 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -109px -55px;
+    }
+
+    .bg-20 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -109px -82px;
+    }
+
+    .bg-21 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -1px -109px;
+    }
+
+    .bg-22 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -28px -109px;
+    }
+
+    .bg-23 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -55px -109px;
+    }
+
+    .bg-24 {
+        width: var(--badge-size-smaller);
+        height: var(--badge-size-smaller);
+        background: url('css_sprites_small.png') -82px -109px;
+    }
+
 }
