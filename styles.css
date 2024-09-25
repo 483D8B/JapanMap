@@ -94,7 +94,7 @@ path {
 
 #badge-container {
     position: absolute;
-    bottom: 0;
+    bottom: 0svh;
     left: 0;
     width: 100%;
     max-height: 100px;
